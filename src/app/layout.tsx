@@ -1,8 +1,13 @@
+import { Button } from "@/components/ui/button";
+import { Bell, Menu as MenuIcon } from "lucide-react";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Link from "next/link";
 import "./globals.css";
+import Menu from "./components/menu";
+import Providers from "@/components/core/providers";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,9 +33,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-sans)]`}
       >
-        {children}
+        <Providers>
+          <header className="flex items-center justify-between p-3 border-b shadow sticky top-0 bg-background/90 backdrop-blur ">
+            <Button variant={"ghost"} size={"icon"}>
+              <MenuIcon />
+            </Button>
+            <Link href={"/"}>
+              <h1 className="font-bold">Marketplace</h1>
+            </Link>
+            <div className="flex">
+              <Button variant={"ghost"} size={"icon"}>
+                <Bell />
+              </Button>
+              <div className="hidden md:block">
+                <Menu />
+              </div>
+            </div>
+          </header>
+          <main className="p-3   min-h-[calc(100svh-120px)]">{children}</main>
+          <footer className="border-top border md:hidden shadow p-3 sticky bottom-0 bg-background/90 backdrop-blur ">
+            <Menu />
+          </footer>
+        </Providers>
       </body>
     </html>
   );
