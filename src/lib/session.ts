@@ -51,19 +51,6 @@ export async function createSession(userId: number) {
   revalidatePath("/");
 }
 
-export async function verifySession() {
-  const cookie = cookies().get(cookies.name)?.value;
-  const session = await decrypt(cookie);
-
-  if (!session?.userId) {
-    return null;
-  }
-
-  return {
-    userId: session.userId,
-  };
-}
-
 export async function deleteSession() {
   cookies().delete(cookie.name);
   revalidatePath("/");

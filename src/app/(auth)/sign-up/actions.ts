@@ -5,6 +5,7 @@ import { users } from "@/lib/db/schema";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import { SignupFormSchema } from "./schemas";
+import { createSession } from "@/lib/session";
 
 type FormState =
   | {
@@ -58,6 +59,8 @@ export async function signup(state: FormState, formData: FormData) {
       message: "An error occurred while creating your account.",
     };
   }
+
+  await createSession(user.id);
 
   return {
     message: "Hi",
