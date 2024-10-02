@@ -1,11 +1,12 @@
+import Providers from "@/components/core/providers";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import { Bell, Menu as MenuIcon } from "lucide-react";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";
-import "./globals.css";
 import Menu from "./components/menu";
-import Providers from "@/components/core/providers";
+import "./globals.css";
 
 // export const runtime = "edge";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-sans)]`}
       >
         <Providers>
+          <Toaster position="top-center" closeButton theme="system" />
           <header className="flex items-center justify-between p-3 border-b shadow sticky top-0 bg-background/90 backdrop-blur ">
             <Button variant={"ghost"} size={"icon"}>
               <MenuIcon />

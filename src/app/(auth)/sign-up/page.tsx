@@ -5,11 +5,18 @@ import { signup } from "./actions";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
   const [state, action] = useFormState(signup, undefined);
 
-  console.log(state);
+  useEffect(() => {
+    if (state?.message) {
+      toast(state.message);
+    }
+  }, [state]);
+
   return (
     <form
       action={action}
@@ -17,32 +24,21 @@ export default function Page() {
     >
       <div className="grid gap-1.5">
         <Label htmlFor="name">Name</Label>
-        <Input value={"steven"} id="name" name="name" placeholder="Name" />
+        <Input id="name" name="name" placeholder="Name" />
         <small className="text-red-500">
           {state?.errors?.name && <p>{state.errors.name}</p>}
         </small>
       </div>
       <div>
         <Label htmlFor="email">Email</Label>
-        <Input
-          value={"steven@steven.com"}
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-        />
+        <Input id="email" name="email" type="email" placeholder="Email" />
         <small className="text-red-500">
           {state?.errors?.email && <p>{state.errors.email}</p>}
         </small>
       </div>
       <div>
         <Label htmlFor="password">Password</Label>
-        <Input
-          value={"12345678A."}
-          id="password"
-          name="password"
-          type="password"
-        />
+        <Input id="password" name="password" type="password" />
         {state?.errors?.password && (
           <div className="text-red-500">
             <small>Password must:</small>
