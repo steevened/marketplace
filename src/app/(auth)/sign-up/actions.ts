@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import { SignupFormSchema } from "./schemas";
 import { createSession } from "@/lib/session";
+import { revalidatePath } from "next/cache";
 
 type FormState =
   | {
@@ -18,7 +19,10 @@ type FormState =
     }
   | undefined;
 
-export async function signup(state: FormState, formData: FormData) {
+export async function signup(
+  state: FormState,
+  formData: FormData
+): Promise<FormState> {
   const validatedFields = SignupFormSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -62,7 +66,5 @@ export async function signup(state: FormState, formData: FormData) {
 
   await createSession(user.id);
 
-  return {
-    message: "Hi",
-  };
+  revalidatePath("/");
 }

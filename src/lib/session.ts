@@ -51,6 +51,15 @@ export async function createSession(userId: number) {
   revalidatePath("/");
 }
 
+export async function verifySession(): Promise<{ userId: number } | null> {
+  const cookieFound = cookies().get(cookie?.name)?.value;
+  const session = await decrypt(cookieFound);
+  if (!session) return null;
+  return {
+    userId: session.userId as number,
+  };
+}
+
 export async function deleteSession() {
   cookies().delete(cookie.name);
   revalidatePath("/");
