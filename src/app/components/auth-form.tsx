@@ -1,10 +1,9 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { signup } from "../(auth)/sign-up/actions";
 
@@ -18,27 +17,33 @@ export default function AuthForm() {
   }, [state]);
 
   return (
-    <form
-      action={action}
-      className="grid gap-6 p-6 max-w-sm mx-auto rounded-lg"
-    >
+    <form action={action} className="grid gap-3">
       <div className="grid gap-1.5">
-        <Label htmlFor="name">Name</Label>
-        <Input id="name" name="name" placeholder="Name" />
+        <Input autoComplete="name" id="name" name="name" placeholder="Name" />
         <small className="text-red-500">
           {state?.errors?.name && <p>{state.errors.name}</p>}
         </small>
       </div>
       <div>
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" placeholder="Email" />
+        <Input
+          autoComplete="email"
+          id="email"
+          name="email"
+          type="email"
+          placeholder="Email"
+        />
         <small className="text-red-500">
           {state?.errors?.email && <p>{state.errors.email}</p>}
         </small>
       </div>
       <div>
-        <Label htmlFor="password">Password</Label>
-        <Input id="password" name="password" type="password" />
+        <Input
+          id="password"
+          name="password"
+          autoComplete="new-password"
+          placeholder="Password"
+          type="password"
+        />
         {state?.errors?.password && (
           <div className="text-red-500">
             <small>Password must:</small>

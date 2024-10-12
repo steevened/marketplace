@@ -1,3 +1,5 @@
+"use server";
+
 import { SessionPayload } from "@/app/(auth)/sign-up/schemas";
 import { SignJWT, jwtVerify } from "jose";
 import { revalidatePath } from "next/cache";

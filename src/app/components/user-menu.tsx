@@ -1,15 +1,50 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+"use client";
+
 import { getUser } from "@/lib/data/user";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AuthDialog from "./auth-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { LogOut, User } from "lucide-react";
+import { deleteSession } from "@/lib/session";
 
-export default async function UserMenu() {
-  const user = await getUser();
-
+export default function UserMenu({
+  user,
+}: {
+  user: Awaited<ReturnType<typeof getUser>>;
+}) {
   if (!user) return <AuthDialog />;
 
   return (
-    <Avatar>
-      <AvatarFallback>{user.name?.[0]}</AvatarFallback>
-    </Avatar>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar>
+            <AvatarFallback>
+              {user.name
+                ? user.name?.split(" ").length > 1
+                  ? user.name.split(" ")[0][0] + user.name.split(" ")[1][0]
+                  : user.name[0] + user.name?.[1]
+                : null}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem>
+          <User className="mr-2 h-4 w-4" />
+          <span>Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => deleteSession()}>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
