@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { deleteSession } from "@/lib/session";
+import { DashboardIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 export default function UserMenu({
   user,
@@ -36,6 +38,14 @@ export default function UserMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        {user.role === "admin" ? (
+          <DropdownMenuItem asChild>
+            <Link href={"/dashboard"}>
+              <DashboardIcon className="mr-2 h-4 w-4" />
+              <span>Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>

@@ -51,7 +51,7 @@ export default function RootLayout({
             </div>
             <UserMenuProvider />
           </header>
-          <main className="p-3   min-h-[calc(100svh-120px)]">{children}</main>
+          <main className="min-h-[calc(100svh-120px)]">{children}</main>
         </Providers>
       </body>
     </html>

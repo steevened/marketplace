@@ -13,7 +13,7 @@ export const users = pgTable("users", {
   name: varchar("name", { length: 100 }),
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: text("password_hash").notNull(),
-  role: varchar("role", { length: 20 }).notNull().default("member"),
+  role: varchar("role", { length: 20 }).notNull().default("user"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
@@ -24,11 +24,6 @@ export const teams = pgTable("teams", {
   name: varchar("name", { length: 100 }).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  stripeCustomerId: text("stripe_customer_id").unique(),
-  stripeSubscriptionId: text("stripe_subscription_id").unique(),
-  stripeProductId: text("stripe_product_id"),
-  planName: varchar("plan_name", { length: 50 }),
-  subscriptionStatus: varchar("subscription_status", { length: 20 }),
 });
 
 export const teamMembers = pgTable("team_members", {
@@ -66,6 +61,39 @@ export const invitations = pgTable("invitations", {
     .references(() => users.id),
   invitedAt: timestamp("invited_at").notNull().defaultNow(),
   status: varchar("status", { length: 20 }).notNull().default("pending"),
+});
+
+export const cars = pgTable("cars", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 200 }),
+  publishedBy: integer("created_by")
+    .notNull()
+    .references(() => users.id),
+  brandId: integer("brand_id").references(() => brands.id),
+  modelId: integer("model_id").references(() => models.id),
+  subtypeId: integer("subtype_id").references(() => carSubtypes.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const brands = pgTable("brands", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }),
+  slug: varchar("slug", { length: 200 }),
+});
+
+export const models = pgTable("models", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }),
+  slug: varchar("slug", { length: 200 }),
+  brandId: integer("brand_id").references(() => brands.id),
+  year: integer("year"),
+});
+
+export const carSubtypes = pgTable("car_subtypes", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }),
+  slug: varchar("slug", { length: 200 }),
 });
 
 export const teamsRelations = relations(teams, ({ many }) => ({
@@ -112,6 +140,21 @@ export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
   }),
 }));
 
+export const carsRelations = relations(cars, ({ one }) => ({
+  brand: one(brands, {
+    fields: [cars.brandId],
+    references: [brands.id],
+  }),
+  model: one(models, {
+    fields: [cars.modelId],
+    references: [models.id],
+  }),
+  subtype: one(carSubtypes, {
+    fields: [cars.subtypeId],
+    references: [carSubtypes.id],
+  }),
+}));
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Team = typeof teams.$inferSelect;
@@ -122,6 +165,7 @@ export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
 export type Invitation = typeof invitations.$inferSelect;
 export type NewInvitation = typeof invitations.$inferInsert;
+export type Car = typeof cars.$inferSelect;
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {
     user: Pick<User, "id" | "name" | "email">;
