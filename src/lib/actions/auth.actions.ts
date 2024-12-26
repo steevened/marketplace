@@ -2,21 +2,13 @@
 
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { SignInSchema } from "../schemas/auth.schemas";
 import { createSession } from "../session";
-
-type FormState =
-  | {
-      errors?: {
-        password?: string[];
-        email?: string[];
-      };
-      message?: string;
-    }
-  | undefined;
+import { FormState } from "../types";
+import { redirect } from "next/navigation";
 
 export async function signIn(
   state: FormState,
@@ -54,4 +46,21 @@ export async function signIn(
   await createSession(user.id);
 
   revalidatePath("/");
+
+  return {
+    success: true,
+  };
+}
+
+export async function signInWithRedirect(
+  state: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const result = await signIn(state, formData);
+
+  if (result?.success) {
+    redirect("/");
+  }
+
+  return result;
 }

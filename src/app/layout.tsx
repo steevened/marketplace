@@ -36,7 +36,7 @@ export default function RootLayout({
       >
         <Providers>
           <Toaster position="top-center" closeButton theme="system" />
-          <header className="flex items-center justify-between p-3 h-16 border-b shadow sticky top-0 bg-background/90 backdrop-blur ">
+          {/* <header className="flex items-center justify-between p-3 h-16 border-b shadow sticky top-0 bg-background/90 backdrop-blur ">
             <div className="flex items-center gap-3">
               <div className="block md:hidden">
                 <Button variant={"ghost"} size={"icon"}>
@@ -48,7 +48,7 @@ export default function RootLayout({
               </Link>
             </div>
             <UserMenuProvider />
-          </header>
+          </header> */}
           <main className="min-h-[calc(100svh-120px)]">{children}</main>
         </Providers>
       </body>

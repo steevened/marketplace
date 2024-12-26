@@ -2,19 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
-import { toast } from "sonner";
-import { signup } from "../(auth)/sign-up/actions";
+import { useActionState } from "react";
+import { signUpWithRedirect } from "../(auth)/sign-up/actions";
 
 export default function AuthForm() {
-  const [state, action] = useFormState(signup, undefined);
-
-  useEffect(() => {
-    if (state?.message) {
-      toast(state.message);
-    }
-  }, [state]);
+  const [state, action, pending] = useActionState(
+    signUpWithRedirect,
+    undefined
+  );
 
   return (
     <form action={action} className="grid gap-3">
@@ -57,17 +52,9 @@ export default function AuthForm() {
           </div>
         )}
       </div>
-      <SubmitButton />
+      <Button isLoading={pending} loadingText="Submitting" type="submit">
+        Sign Up
+      </Button>
     </form>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button isLoading={pending} loadingText="Submitting" type="submit">
-      Sign Up
-    </Button>
   );
 }

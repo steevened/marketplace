@@ -2,19 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { signIn } from "@/lib/actions/auth.actions";
-import { useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { signIn, signInWithRedirect } from "@/lib/actions/auth.actions";
+import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function SignInForm() {
-  const [state, action] = useFormState(signIn, undefined);
-
-  useEffect(() => {
-    if (state?.message) {
-      toast(state.message);
-    }
-  }, [state]);
+  const [state, action, pending] = useActionState(
+    signInWithRedirect,
+    undefined
+  );
 
   return (
     <form action={action} className="grid gap-3">
@@ -49,18 +45,16 @@ export default function SignInForm() {
             </ul>
           </div>
         )}
+
+        {state?.message && (
+          <div className="text-red-500">
+            <small>{state.message}</small>
+          </div>
+        )}
       </div>
-      <SubmitButton />
+      <Button isLoading={pending} loadingText="Submitting" type="submit">
+        Log In
+      </Button>
     </form>
-  );
-}
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button isLoading={pending} loadingText="Submitting" type="submit">
-      Log In
-    </Button>
   );
 }

@@ -7,17 +7,8 @@ import { eq } from "drizzle-orm";
 import { SignupFormSchema } from "./schemas";
 import { createSession } from "@/lib/session";
 import { revalidatePath } from "next/cache";
-
-type FormState =
-  | {
-      errors?: {
-        name?: string[];
-        email?: string[];
-        password?: string[];
-      };
-      message?: string;
-    }
-  | undefined;
+import { redirect } from "next/navigation";
+import { FormState } from "@/lib/types";
 
 export async function signup(
   state: FormState,
@@ -67,4 +58,23 @@ export async function signup(
   await createSession(user.id);
 
   revalidatePath("/");
+
+  return {
+    success: true,
+  };
+}
+
+export async function signUpWithRedirect(
+  state: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const result = await signup(state, formData);
+
+  console.log(result);
+
+  if (result?.success) {
+    redirect("/");
+  }
+
+  return result;
 }
