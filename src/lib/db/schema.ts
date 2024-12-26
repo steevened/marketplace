@@ -69,10 +69,10 @@ export const cars = pgTable("cars", {
   publishedBy: integer("created_by")
     .notNull()
     .references(() => users.id),
-
   modelId: integer("model_id").references(() => models.id),
-  subtypeId: integer("subtype_id").references(() => carSubtypes.id),
   cityId: integer("city_id").references(() => cities.id),
+  price: integer("price").notNull(),
+  mileage: integer("mileage").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -87,6 +87,7 @@ export const models = pgTable("models", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }),
   slug: varchar("slug", { length: 200 }),
+  subtypeId: integer("subtype_id").references(() => carSubtypes.id),
   brandId: integer("brand_id").references(() => brands.id),
   year: integer("year"),
 });
@@ -159,11 +160,6 @@ export const carsRelations = relations(cars, ({ one }) => ({
     fields: [cars.modelId],
     references: [models.id],
   }),
-  subtype: one(carSubtypes, {
-    fields: [cars.subtypeId],
-    references: [carSubtypes.id],
-  }),
-
   city: one(cities, {
     fields: [cars.cityId],
     references: [cities.id],
