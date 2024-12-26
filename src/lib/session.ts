@@ -40,13 +40,14 @@ export async function decrypt(session: string | undefined = "") {
 }
 
 export async function createSession(userId: number) {
+  const cookieStore = await cookies();
   const expires = new Date(Date.now() + cookie.duration);
   const session = await encrypt({
     userId,
     expires,
   });
 
-  cookies().set(cookie.name, session, {
+  cookieStore.set(cookie.name, session, {
     ...cookie.options,
     expires,
   });
@@ -54,7 +55,8 @@ export async function createSession(userId: number) {
 }
 
 export async function verifySession(): Promise<{ userId: number } | null> {
-  const cookieFound = cookies().get(cookie?.name)?.value;
+  const cookieStore = await cookies();
+  const cookieFound = cookieStore.get(cookie?.name)?.value;
   const session = await decrypt(cookieFound);
   if (!session) return null;
   return {
@@ -63,6 +65,7 @@ export async function verifySession(): Promise<{ userId: number } | null> {
 }
 
 export async function deleteSession() {
-  cookies().delete(cookie.name);
+  const cookieStore = await cookies();
+  cookieStore.delete(cookie.name);
   revalidatePath("/");
 }
