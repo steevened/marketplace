@@ -69,9 +69,10 @@ export const cars = pgTable("cars", {
   publishedBy: integer("created_by")
     .notNull()
     .references(() => users.id),
-  brandId: integer("brand_id").references(() => brands.id),
+
   modelId: integer("model_id").references(() => models.id),
   subtypeId: integer("subtype_id").references(() => carSubtypes.id),
+  cityId: integer("city_id").references(() => cities.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -94,6 +95,19 @@ export const carSubtypes = pgTable("car_subtypes", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }),
   slug: varchar("slug", { length: 200 }),
+});
+
+export const provinces = pgTable("provinces", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }),
+  slug: varchar("slug", { length: 200 }),
+});
+
+export const cities = pgTable("cities", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }),
+  slug: varchar("slug", { length: 200 }),
+  provinceId: integer("province_id").references(() => provinces.id),
 });
 
 export const teamsRelations = relations(teams, ({ many }) => ({
@@ -141,10 +155,6 @@ export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
 }));
 
 export const carsRelations = relations(cars, ({ one }) => ({
-  brand: one(brands, {
-    fields: [cars.brandId],
-    references: [brands.id],
-  }),
   model: one(models, {
     fields: [cars.modelId],
     references: [models.id],
@@ -152,6 +162,11 @@ export const carsRelations = relations(cars, ({ one }) => ({
   subtype: one(carSubtypes, {
     fields: [cars.subtypeId],
     references: [carSubtypes.id],
+  }),
+
+  city: one(cities, {
+    fields: [cars.cityId],
+    references: [cities.id],
   }),
 }));
 
