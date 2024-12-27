@@ -6,7 +6,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { SignInSchema } from "../schemas/auth.schemas";
-import { createSession } from "../session";
+import { createSession, deleteSession } from "../session";
 import { FormState } from "../types";
 import { redirect } from "next/navigation";
 
@@ -63,4 +63,9 @@ export async function signInWithRedirect(
   }
 
   return result;
+}
+
+export async function signOut() {
+  await deleteSession();
+  revalidatePath("/");
 }

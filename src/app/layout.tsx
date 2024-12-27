@@ -1,11 +1,7 @@
 import Providers from "@/components/core/providers";
-import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
-import { Menu as MenuIcon } from "lucide-react";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Link from "next/link";
-import UserMenuProvider from "./components/user-menu-provider";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -36,19 +32,7 @@ export default function RootLayout({
       >
         <Providers>
           <Toaster position="top-center" closeButton theme="system" />
-          {/* <header className="flex items-center justify-between p-3 h-16 border-b shadow sticky top-0 bg-background/90 backdrop-blur ">
-            <div className="flex items-center gap-3">
-              <div className="block md:hidden">
-                <Button variant={"ghost"} size={"icon"}>
-                  <MenuIcon />
-                </Button>
-              </div>
-              <Link href={"/"}>
-                <h1 className="font-bold">Marketplace</h1>
-              </Link>
-            </div>
-            <UserMenuProvider />
-          </header> */}
+
           <main className="min-h-[calc(100svh-120px)]">{children}</main>
         </Providers>
       </body>
