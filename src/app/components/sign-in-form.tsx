@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signInWithRedirect } from "@/lib/actions/auth.actions";
-import { useActionState } from "react";
+import React, { useActionState } from "react";
 
 export default function SignInForm({
   searchParams,
@@ -15,6 +15,14 @@ export default function SignInForm({
     signInWithRedirect,
     undefined
   );
+
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputRef]);
 
   return (
     <form action={action} className="">
@@ -29,6 +37,7 @@ export default function SignInForm({
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
+            ref={inputRef}
             name="email"
             autoComplete="email"
             placeholder="Email"
@@ -119,59 +128,6 @@ export default function SignInForm({
           </a>
         </div>
       </div>
-    </form>
-  );
-}
-
-function _SignInForm() {
-  const [state, action, pending] = useActionState(
-    signInWithRedirect,
-    undefined
-  );
-
-  return (
-    <form action={action} className="grid gap-3">
-      <div className="grid gap-1.5">
-        <Input
-          id="email"
-          name="email"
-          autoComplete="email"
-          placeholder="Email"
-        />
-        <small className="text-red-500">
-          {state?.errors?.email && <p>{state.errors.email}</p>}
-        </small>
-      </div>
-      <div className="grid gap-1.5">
-        <Input
-          id="password"
-          name="password"
-          autoComplete="current-password"
-          placeholder="Password"
-          type="password"
-        />
-        {state?.errors?.password && (
-          <div className="text-red-500">
-            <small>Password must:</small>
-            <ul>
-              {state.errors.password.map((error) => (
-                <li key={error}>
-                  <small>- {error}</small>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {state?.message && (
-          <div className="text-red-500">
-            <small>{state.message}</small>
-          </div>
-        )}
-      </div>
-      <Button isLoading={pending} loadingText="Submitting" type="submit">
-        Log In
-      </Button>
     </form>
   );
 }

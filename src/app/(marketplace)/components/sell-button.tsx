@@ -9,12 +9,7 @@ export default function SellButton() {
 
   return (
     <Button variant={"subtle"} size={"sm"} asChild>
-      <Link
-        href={{
-          pathname: "/sell",
-          search: searchParams.toString(),
-        }}
-      >
+      <Link href={`/sell${searchParams ? `?${searchParams.toString()}` : ""}`}>
         Vende tu auto
       </Link>
     </Button>

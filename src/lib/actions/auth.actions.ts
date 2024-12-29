@@ -61,7 +61,7 @@ export async function signInWithRedirect(
   const redirectParam = formData.get("redirect") as string;
 
   if (result?.success) {
-    redirect("/" + "?" + redirectParam);
+    redirect(redirectParam || "/");
   }
 
   return result;

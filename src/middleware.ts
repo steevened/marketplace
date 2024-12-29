@@ -6,7 +6,7 @@ const protectedRoutes = ["/dashboard", "/sell"];
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const params = new URLSearchParams(request.nextUrl.searchParams);
+  const params = new URLSearchParams(request.nextUrl.searchParams.toString());
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
@@ -19,8 +19,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           `/sign-in${
-            params.toString()
-              ? `?redirect=${encodeURIComponent(params.toString())}`
+            request.nextUrl.pathname !== "/sign-in"
+              ? `?redirect=${encodeURIComponent(
+                  request.nextUrl.pathname + (params ? `?${params}` : "")
+                )}`
               : ""
           }`,
           request.url

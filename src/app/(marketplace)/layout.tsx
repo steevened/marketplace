@@ -18,7 +18,7 @@ import Link from "next/link";
 import MarketSidebarFooter from "./components/mk-sidebar-footer";
 import PriceRange from "./components/price-range";
 import { Separator } from "@/components/ui/separator";
-import SellButton from "./sell-button";
+import SellButton from "./components/sell-button";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
