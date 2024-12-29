@@ -8,15 +8,9 @@ export default async function MarketSidebarFooter() {
 
   if (!session) {
     return (
-      <div className="grid gap-1.5">
-        <Button variant={"subtle"} size={"sm"}>
-          Vende tu auto
-        </Button>
-
-        <Button size={"sm"} asChild>
-          <Link href={"/sign-in"}>Inicia sesión</Link>
-        </Button>
-      </div>
+      <Button size={"sm"} asChild>
+        <Link href={"/sign-in"}>Inicia sesión</Link>
+      </Button>
     );
   }
 

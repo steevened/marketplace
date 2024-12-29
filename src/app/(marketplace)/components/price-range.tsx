@@ -5,14 +5,15 @@ import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
 
 export default function PriceRange() {
-  const [priceRange, setPriceRange] = useState([0, 25000]);
+  const [priceRange, setPriceRange] = useState([4500, 35000]);
   return (
     <div className="grid gap-2">
       <h3 className="text-sm font-medium">Rango de precio</h3>
       <div className="grid gap-3">
         <Slider
           value={priceRange}
-          max={200000}
+          max={35000}
+          min={4500}
           step={1000}
           onValueChange={setPriceRange}
         />

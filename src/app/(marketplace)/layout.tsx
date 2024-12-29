@@ -11,11 +11,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Car } from "lucide-react";
 import Link from "next/link";
 import MarketSidebarFooter from "./components/mk-sidebar-footer";
 import PriceRange from "./components/price-range";
+import { Separator } from "@/components/ui/separator";
+import SellButton from "./sell-button";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,7 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <SidebarGroupLabel>Explorar</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
+                <SidebarMenuItem className="px-2">
                   <PriceRange />
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -55,7 +58,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <main>{children}</main>
+        <main>
+          <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+            </div>
+            <SellButton />
+          </header>
+
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

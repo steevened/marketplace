@@ -58,8 +58,10 @@ export async function signInWithRedirect(
 ): Promise<FormState> {
   const result = await signIn(state, formData);
 
+  const redirectParam = formData.get("redirect") as string;
+
   if (result?.success) {
-    redirect("/");
+    redirect("/" + "?" + redirectParam);
   }
 
   return result;
