@@ -12,7 +12,7 @@ export const PasswordSchema = z
 
 export const EmailSchema = z
   .string()
-  .email({ message: "Please enter a valid email." })
+  .email({ message: "Ingrese un email válido." })
   .trim();
 
 export const SignInSchema = z.object({

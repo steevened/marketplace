@@ -30,23 +30,24 @@ export default function SignInForm({
         <div className="flex flex-col items-center text-center">
           <h1 className="text-2xl font-bold">Bienvenido</h1>
           <p className="text-balance text-muted-foreground">
-            Ingresa tus credenciales para continuar
+            Ingresa tu email para continuar
           </p>
         </div>
+
         <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            ref={inputRef}
-            name="email"
-            autoComplete="email"
-            placeholder="Email"
-          />
-          <small className="text-red-500">
-            {state?.errors?.email && <p>{state.errors.email}</p>}
-          </small>
-        </div>
-        <div className="grid gap-2">
+          <div className="grid gap-2">
+            <Input
+              id="email"
+              ref={inputRef}
+              name="email"
+              autoComplete="email"
+              placeholder="Email"
+            />
+            <small className="text-red-500">
+              {state?.errors?.email && <p>{state.errors.email}</p>}
+            </small>
+          </div>
+          {/* <div className="grid gap-2">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
             <a
@@ -83,11 +84,12 @@ export default function SignInForm({
               <small>{state.message}</small>
             </div>
           )}
+        </div> */}
+          <Button isLoading={pending} loadingText="Cargando" type="submit">
+            Iniciar sesión
+          </Button>
         </div>
-        <Button isLoading={pending} loadingText="Submitting" type="submit">
-          Iniciar sesión
-        </Button>
-        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+        {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
             Or continue with
           </span>
@@ -120,13 +122,7 @@ export default function SignInForm({
             </svg>
             <span className="sr-only">Login with Meta</span>
           </Button>
-        </div>
-        <div className="text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <a href="#" className="underline underline-offset-4">
-            Sign up
-          </a>
-        </div>
+        </div> */}
       </div>
     </form>
   );
