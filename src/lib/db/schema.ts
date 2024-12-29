@@ -8,19 +8,47 @@ import {
   boolean,
   decimal,
   jsonb,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }),
+  lastname: varchar("lastname", { length: 100 }),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  emailVerified: timestamp("email_verified", { mode: "date" }),
+  phone: varchar("phone", { length: 20 }),
+  phoneVerified: timestamp("phone_verified", { mode: "date" }),
   passwordHash: text("password_hash").notNull(),
   role: varchar("role", { length: 20 }).notNull().default("user"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
+  avatar: text("avatar"),
 });
+
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (verificationTokens) => {
+    return [
+      {
+        pk: primaryKey({
+          columns: [verificationTokens.identifier, verificationTokens.token],
+        }),
+        pkWithCustomName: primaryKey({
+          name: "verification_token_pk",
+          columns: [verificationTokens.identifier, verificationTokens.token],
+        }),
+      },
+    ];
+  }
+);
 
 export const teams = pgTable("teams", {
   id: serial("id").primaryKey(),
