@@ -10,12 +10,12 @@ export const PasswordSchema = z
   })
   .trim();
 
-export const EmailSchema = z
+export const EmailSchemaField = z
   .string()
   .email({ message: "Ingrese un email válido." })
   .trim();
 
 export const SignInSchema = z.object({
-  email: EmailSchema,
+  email: EmailSchemaField,
   password: PasswordSchema,
 });
