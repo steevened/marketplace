@@ -1,4 +1,5 @@
 import SignInForm from "@/app/components/sign-in-form";
+import { cookies } from "next/headers";
 import Link from "next/link";
 
 type SearchParams = Promise<{
@@ -10,6 +11,7 @@ export default async function Page({
 }: {
   searchParams: SearchParams;
 }) {
+  const cookieStore = await cookies();
   return (
     <div className="h-svh flex flex-col">
       <div className="flex flex-col items-center justify-center p-6 md:p-10 flex-1">
