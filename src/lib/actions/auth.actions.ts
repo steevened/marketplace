@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcrypt";
-import { eq } from "drizzle-orm";
+import { and, eq, gt, lt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -94,13 +94,22 @@ export async function sendEmailVerificationToken(
 
   const { email } = validatedFields.data;
 
-  const cookieStore = await cookies();
+  await createAuthSession(email);
 
-  cookieStore.set("verify-email", email, {
-    maxAge: 60 * 5 * 1000,
-  });
+  // const cookieStore = await cookies();
 
-  const [user] = await db.select().from(users).where(eq(users.email, email));
+  // cookieStore.set("verify-email", email, {
+  //   expires: new Date(Date.now() + 60 * 5 * 1000),
+  // });
+
+  // cookieStore.set("email-process", email, {
+  //   expires: new Date(Date.now() + 60 * 10 * 1000),
+  // });
+
+  const [user] = await db
+    .select({ userId: users.id, email: users.email })
+    .from(users)
+    .where(eq(users.email, email));
 
   if (!user) {
     return {
@@ -108,10 +117,27 @@ export async function sendEmailVerificationToken(
     };
   }
 
+  const [currentOtp] = await db
+    .select()
+    .from(verificationTokens)
+    .where(
+      and(
+        eq(verificationTokens.identifier, email),
+        gt(verificationTokens.expires, new Date())
+      )
+    );
+
+  if (currentOtp) {
+    return {
+      message: "Ya se ha enviado un código OTP a tu email",
+      // success: true,
+    };
+  }
+
   const token = generateNumericOtp(6);
 
   await db.insert(verificationTokens).values({
-    expires: new Date(Date.now() + 60 * 5 * 1000),
+    expires: new Date(Date.now() + 60 * 5),
     token,
     identifier: user.email,
   });
@@ -142,7 +168,7 @@ export async function verifyEmailToken(
     .object({
       email: EmailSchemaField,
       otp: z.coerce.string().length(6, {
-        message: "El código OTP debe ser de 6 dígitos",
+        message: "El código OTP debe tener 6 dígitos",
       }),
     })
     .safeParse({
@@ -158,32 +184,92 @@ export async function verifyEmailToken(
 
   const { email, otp } = validatedFields.data;
 
-  if (otp !== "123456") {
+  const [existingToken] = await db
+    .select()
+    .from(verificationTokens)
+    .where(
+      and(
+        eq(verificationTokens.identifier, email),
+        eq(verificationTokens.token, otp)
+      )
+    );
+
+  if (!existingToken) {
     return {
-      message: "El código OTP es incorrecto",
-      success: false,
+      message: "Código OTP inválido",
     };
   }
 
-  // const { email, token } = validatedFields.data;
+  if (existingToken.expires < new Date(Date.now())) {
+    return {
+      message:
+        "El código OTP ingresado ha expirado, ingresa el nuevo código enviado a tu email.",
+      success: false,
+      errors: {
+        otpExpired: "true",
+      },
+    };
+  }
 
-  // const [user] = await db.select().from(users).where(eq(users.email, email));
+  // const [userUpdated] = await db
+  //   .update(users)
+  //   .set({ emailVerified: new Date() })
+  //   .where(eq(users.email, email))
+  //   .returning({
+  //     userId: users.id,
+  //   });
 
-  // if (!user) {
-  //   return {
-  //     message: "Invalid email or token",
-  //   };
-  // }
+  const [userFounded] = await db
+    .select({ userId: users.id })
+    .from(users)
+    .where(eq(users.email, email));
 
-  // if (user.emailVerificationToken !== token) {
-  //   return {
-  //     message: "Invalid email or token",
-  //   };
-  // }
+  await createSession(userFounded.userId);
 
-  // await db.update(users).set({ emailVerified: true }).where(eq(users.id, user.id));
+  const redirectParam = formData.get("redirect") as string;
 
-  // cookieStore.delete("verify-email");
+  redirect(redirectParam || "/");
+}
+
+export async function resetAuthProcess() {
+  const cookieStore = await cookies();
+  cookieStore.delete("verify-email");
+}
+
+export async function resendEmailToken(state: FormState) {
+  const cookieStore = await cookies();
+  const emailToVerify = cookieStore.get("verify-email")?.value;
+
+  if (!emailToVerify) {
+    return {
+      message: "No se ha encontrado un email para enviar el código OTP",
+    };
+  }
+
+  const [currentOtp] = await db
+    .select()
+    .from(verificationTokens)
+    .where(
+      and(
+        eq(verificationTokens.identifier, emailToVerify),
+        gt(verificationTokens.expires, new Date())
+      )
+    );
+
+  if (currentOtp) {
+    return {
+      message:
+        "El código OTP ya ha sido enviado a tu email, por favor revisa tu bandeja de entrada.",
+    };
+  }
+
+  const token = generateNumericOtp(6);
+
+  await db.insert(verificationTokens).values({
+    expires: new Date(Date.now() + 60 * 5 * 1000),
+    token,
+    identifier: emailToVerify,
+  });
 
   return {
     success: true,
@@ -197,3 +283,17 @@ const generateNumericOtp = (length: number): string => {
   }
   return otp;
 };
+
+async function createAuthSession(email: string) {
+  const cookieStore = await cookies();
+
+  cookieStore.set("auth-session", email, {
+    expires: new Date(Date.now() + 60 * 10 * 1000),
+  });
+}
+
+export async function getAuthSession(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  const email = cookieStore.get("auth-session")?.value;
+  return email;
+}

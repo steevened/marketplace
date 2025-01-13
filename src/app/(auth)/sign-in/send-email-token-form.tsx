@@ -7,8 +7,10 @@ import React, { useActionState } from "react";
 
 export default function SendVerificationEmail({
   searchParams,
-}: {
+}: // emailProcess,
+{
   searchParams?: Record<string, string>;
+  // emailProcess?: string;
 }) {
   const [state, action, pending] = useActionState(
     sendEmailVerificationToken,
@@ -36,6 +38,7 @@ export default function SendVerificationEmail({
         <div className="grid gap-2">
           <div className="grid gap-2">
             <Input
+              // defaultValue={emailProcess}
               id="email"
               ref={inputRef}
               name="email"

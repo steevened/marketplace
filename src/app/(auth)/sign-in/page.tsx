@@ -17,12 +17,16 @@ export default async function Page({
   const cookieStore = await cookies();
 
   const emailToVerify = cookieStore.get("verify-email")?.value;
+  const emailProcess = cookieStore.get("email-process")?.value;
   return (
     <div className="h-svh flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-10">
         <div className="w-full max-w-[24rem]">
           {!emailToVerify ? (
-            <SendVerificationEmail searchParams={await searchParams} />
+            <SendVerificationEmail
+              emailProcess={emailProcess}
+              searchParams={await searchParams}
+            />
           ) : (
             <VerifyEmailToken />
           )}

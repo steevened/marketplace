@@ -6,13 +6,19 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { verifyEmailToken } from "@/lib/actions/auth.actions";
+import {
+  resendEmailToken,
+  resetAuthProcess,
+  verifyEmailToken,
+} from "@/lib/actions/auth.actions";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useActionState } from "react";
+import { useActionState, useTransition } from "react";
 
 export default function EmailTokenForm({ email }: { email: string }) {
+  const [isPendingResetProcess, startTransitionResetProcess] = useTransition();
   const [state, action, pending] = useActionState(verifyEmailToken, undefined);
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
     <form action={action} className="">
@@ -48,23 +54,59 @@ export default function EmailTokenForm({ email }: { email: string }) {
             </div>
           )}
 
-          <Button isLoading={pending} loadingText="Cargando" type="submit">
-            Verificar
-          </Button>
-
-          {state?.errors?.otpExpired ? (
-            <Button
-              variant={"ghost"}
-              type="button"
-              size={"sm"}
-              onClick={() => router.refresh()}
-              className="text-primary text-center mt-2 text-sm hover:text-primary/90"
-            >
-              <p>Enviar nuevo código</p>
+          {!state?.errors?.otpExpired ? (
+            <Button isLoading={pending} loadingText="Cargando" type="submit">
+              Verificar
             </Button>
           ) : null}
+
+          {state?.errors?.otpExpired ? <ResendEmailToken /> : null}
+
+          <Button
+            size={"sm"}
+            className="group bg-transparent hover:bg-transparent shadow-none"
+            variant={"subtle"}
+            type="button"
+            isLoading={isPendingResetProcess}
+            loadingText="Cargando"
+            onClick={() => {
+              startTransitionResetProcess(() => {
+                resetAuthProcess();
+              });
+            }}
+          >
+            <ArrowLeft className="group-hover:-translate-x-0.5 transition-transform" />
+            Regresar
+          </Button>
         </div>
       </div>
     </form>
+  );
+}
+
+function ResendEmailToken() {
+  const [state, formAction, isPending] = useActionState(
+    resendEmailToken,
+    undefined
+  );
+  return (
+    <div className="w-full grid gap-2">
+      <Button
+        variant={"secondary"}
+        type="button"
+        size={"sm"}
+        isLoading={isPending}
+        loadingText="Enviando código OTP"
+        formAction={formAction}
+      >
+        <p>Enviar nuevo código</p>
+      </Button>
+
+      {state?.message ? (
+        <div className="text-red-500 text-center leading-4">
+          <small>{state.message}</small>
+        </div>
+      ) : null}
+    </div>
   );
 }
