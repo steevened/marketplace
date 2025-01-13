@@ -12,7 +12,6 @@ import {
   verifyEmailToken,
 } from "@/lib/actions/auth.actions";
 import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useActionState, useTransition } from "react";
 
 export default function EmailTokenForm({ email }: { email: string }) {
@@ -43,15 +42,16 @@ export default function EmailTokenForm({ email }: { email: string }) {
                 <InputOTPSlot index={5} />
               </InputOTPGroup>
             </InputOTP>
-            <small className="text-red-500 text-center">
-              {state?.errors?.otp && <p>{state.errors.otp}</p>}
-            </small>
+
+            {state?.errors?.otp ? (
+              <small className="text-red-500 text-center">
+                {state.errors.otp}
+              </small>
+            ) : null}
           </div>
 
           {state?.message && (
-            <div className="text-red-500 text-center leading-4">
-              <small>{state.message}</small>
-            </div>
+            <small className="text-red-500 text-center">{state.message}</small>
           )}
 
           {!state?.errors?.otpExpired ? (

@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { sendEmailVerificationToken } from "@/lib/actions/auth.actions";
 import React, { useActionState } from "react";
+import { toast } from "sonner";
 
 export default function SendVerificationEmail({
   searchParams,
-}: // emailProcess,
-{
+  authSessionEmail,
+}: {
   searchParams?: Record<string, string>;
-  // emailProcess?: string;
+  authSessionEmail?: string;
 }) {
   const [state, action, pending] = useActionState(
     sendEmailVerificationToken,
@@ -25,6 +26,12 @@ export default function SendVerificationEmail({
     }
   }, [inputRef]);
 
+  React.useEffect(() => {
+    if (state?.message) {
+      toast(state.message);
+    }
+  }, [state]);
+
   return (
     <form action={action} className="">
       <div className="flex flex-col gap-6">
@@ -38,16 +45,16 @@ export default function SendVerificationEmail({
         <div className="grid gap-2">
           <div className="grid gap-2">
             <Input
-              // defaultValue={emailProcess}
+              defaultValue={authSessionEmail}
               id="email"
               ref={inputRef}
               name="email"
               autoComplete="email"
               placeholder="Email"
             />
-            <small className="text-red-500">
-              {state?.errors?.email && <p>{state.errors.email}</p>}
-            </small>
+            {state?.errors?.email && (
+              <small className="text-red-500">{state.errors.email}</small>
+            )}
           </div>
 
           <Button isLoading={pending} loadingText="Cargando" type="submit">

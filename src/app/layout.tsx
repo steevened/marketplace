@@ -31,7 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-sans)]`}
       >
         <Providers>
-          <Toaster position="top-center" closeButton theme="system" />
+          <Toaster closeButton theme="system" />
 
           <main className="min-h-[calc(100svh-120px)]">{children}</main>
         </Providers>

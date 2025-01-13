@@ -94,24 +94,13 @@ export async function sendEmailVerificationToken(
 
   const { email } = validatedFields.data;
 
-  await createAuthSession(email);
-
-  // const cookieStore = await cookies();
-
-  // cookieStore.set("verify-email", email, {
-  //   expires: new Date(Date.now() + 60 * 5 * 1000),
-  // });
-
-  // cookieStore.set("email-process", email, {
-  //   expires: new Date(Date.now() + 60 * 10 * 1000),
-  // });
-
   const [user] = await db
     .select({ userId: users.id, email: users.email })
     .from(users)
     .where(eq(users.email, email));
 
   if (!user) {
+    await createAuthSession(email);
     return {
       success: true,
     };
@@ -128,19 +117,22 @@ export async function sendEmailVerificationToken(
     );
 
   if (currentOtp) {
+    await createAuthSession(email);
     return {
       message: "Ya se ha enviado un código OTP a tu email",
-      // success: true,
+      success: false,
     };
   }
 
   const token = generateNumericOtp(6);
 
   await db.insert(verificationTokens).values({
-    expires: new Date(Date.now() + 60 * 5),
+    expires: new Date(Date.now() + 60 * 5 * 1000),
     token,
     identifier: user.email,
   });
+
+  await createAuthSession(email);
 
   return {
     success: true,
@@ -151,10 +143,12 @@ export async function verifyEmailToken(
   state: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const cookieStore = await cookies();
-  const emailToVerify = cookieStore.get("verify-email")?.value;
+  // const cookieStore = await cookies();
+  // const emailToVerify = cookieStore.get("verify-email")?.value;
 
-  if (!emailToVerify) {
+  const authSession = await getAuthSession();
+
+  if (!authSession) {
     return {
       message: "El código OTP ha expirado, por favor solicita uno nuevo",
       success: false,
@@ -172,7 +166,7 @@ export async function verifyEmailToken(
       }),
     })
     .safeParse({
-      email: emailToVerify,
+      email: authSession,
       otp: formData.get("otp"),
     });
 
@@ -233,7 +227,7 @@ export async function verifyEmailToken(
 
 export async function resetAuthProcess() {
   const cookieStore = await cookies();
-  cookieStore.delete("verify-email");
+  cookieStore.delete("auth-session");
 }
 
 export async function resendEmailToken(state: FormState) {
@@ -288,12 +282,13 @@ async function createAuthSession(email: string) {
   const cookieStore = await cookies();
 
   cookieStore.set("auth-session", email, {
-    expires: new Date(Date.now() + 60 * 10 * 1000),
+    // expires: new Date(Date.now() + 60 * 10 * 1000),
   });
 }
 
 export async function getAuthSession(): Promise<string | undefined> {
   const cookieStore = await cookies();
   const email = cookieStore.get("auth-session")?.value;
+  cookieStore.get("auth-session");
   return email;
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import SendVerificationEmail from "./send-email-token-form";
 import VerifyEmailToken from "./verify-email-token";
 import EmailTokenForm from "./email-token-form";
+import { getAuthSession } from "@/lib/actions/auth.actions";
 
 type SearchParams = Promise<{
   redirect?: string;
@@ -14,17 +15,15 @@ export default async function Page({
 }: {
   searchParams: SearchParams;
 }) {
-  const cookieStore = await cookies();
+  const authSession = await getAuthSession();
 
-  const emailToVerify = cookieStore.get("verify-email")?.value;
-  const emailProcess = cookieStore.get("email-process")?.value;
   return (
     <div className="h-svh flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-10">
         <div className="w-full max-w-[24rem]">
-          {!emailToVerify ? (
+          {!authSession ? (
             <SendVerificationEmail
-              emailProcess={emailProcess}
+              authSessionEmail={authSession}
               searchParams={await searchParams}
             />
           ) : (
