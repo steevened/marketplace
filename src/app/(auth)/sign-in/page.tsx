@@ -27,7 +27,7 @@ export default async function Page({
               searchParams={await searchParams}
             />
           ) : (
-            <VerifyEmailToken />
+            <VerifyEmailToken searchParams={await searchParams} />
           )}
         </div>
       </div>

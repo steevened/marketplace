@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "../db";
-import { users, verificationTokens } from "../db/schema";
+import { users, VerificationToken, verificationTokens } from "../db/schema";
 import { EmailSchemaField, SignInSchema } from "../schemas/auth.schemas";
 import { createSession, deleteSession } from "../session";
 import { FormState } from "../types";
@@ -74,14 +74,13 @@ export async function signOut() {
   revalidatePath("/");
 }
 
-const EmailSchema = z.object({
-  email: EmailSchemaField,
-});
-
 export async function sendEmailVerificationToken(
   state: FormState,
   formData: FormData
 ) {
+  const EmailSchema = z.object({
+    email: EmailSchemaField,
+  });
   const validatedFields = EmailSchema.safeParse({
     email: formData.get("email"),
   });
@@ -124,13 +123,7 @@ export async function sendEmailVerificationToken(
     };
   }
 
-  const token = generateNumericOtp(6);
-
-  await db.insert(verificationTokens).values({
-    expires: new Date(Date.now() + 60 * 5 * 1000),
-    token,
-    identifier: user.email,
-  });
+  await insertOtpToken(email);
 
   await createAuthSession(email);
 
@@ -143,9 +136,6 @@ export async function verifyEmailToken(
   state: FormState,
   formData: FormData
 ): Promise<FormState> {
-  // const cookieStore = await cookies();
-  // const emailToVerify = cookieStore.get("verify-email")?.value;
-
   const authSession = await getAuthSession();
 
   if (!authSession) {
@@ -194,14 +184,24 @@ export async function verifyEmailToken(
     };
   }
 
-  if (existingToken.expires < new Date(Date.now())) {
+  const activeToken = await getActiveOtp(authSession);
+
+  if (!activeToken) {
     return {
       message:
-        "El código OTP ingresado ha expirado, ingresa el nuevo código enviado a tu email.",
+        "El código OTP ingresado ha expirado, por favor solicita un nuevo código.",
       success: false,
       errors: {
         otpExpired: "true",
       },
+    };
+  }
+
+  if (existingToken.token !== activeToken.token) {
+    return {
+      message:
+        "El código OTP ingresado ha expirado, ingresa el código más reciente enviado a tu email.",
+      success: false,
     };
   }
 
@@ -222,6 +222,9 @@ export async function verifyEmailToken(
 
   const redirectParam = formData.get("redirect") as string;
 
+  resetAuthProcess();
+  deleteActiveOtp(email);
+
   redirect(redirectParam || "/");
 }
 
@@ -231,39 +234,29 @@ export async function resetAuthProcess() {
 }
 
 export async function resendEmailToken(state: FormState) {
-  const cookieStore = await cookies();
-  const emailToVerify = cookieStore.get("verify-email")?.value;
+  const authSession = await getAuthSession();
 
-  if (!emailToVerify) {
+  if (!authSession) {
     return {
       message: "No se ha encontrado un email para enviar el código OTP",
+      success: false,
+      errors: {
+        otpExpired: "true",
+      },
     };
   }
 
-  const [currentOtp] = await db
-    .select()
-    .from(verificationTokens)
-    .where(
-      and(
-        eq(verificationTokens.identifier, emailToVerify),
-        gt(verificationTokens.expires, new Date())
-      )
-    );
+  const activeOtp = await getActiveOtp(authSession);
 
-  if (currentOtp) {
+  if (activeOtp) {
     return {
       message:
         "El código OTP ya ha sido enviado a tu email, por favor revisa tu bandeja de entrada.",
+      success: false,
     };
   }
 
-  const token = generateNumericOtp(6);
-
-  await db.insert(verificationTokens).values({
-    expires: new Date(Date.now() + 60 * 5 * 1000),
-    token,
-    identifier: emailToVerify,
-  });
+  await insertOtpToken(authSession);
 
   return {
     success: true,
@@ -289,6 +282,44 @@ async function createAuthSession(email: string) {
 export async function getAuthSession(): Promise<string | undefined> {
   const cookieStore = await cookies();
   const email = cookieStore.get("auth-session")?.value;
-  cookieStore.get("auth-session");
   return email;
+}
+
+async function getActiveOtp(
+  email: string
+): Promise<VerificationToken | undefined> {
+  const [activeOtp] = await db
+    .select()
+    .from(verificationTokens)
+    .where(
+      and(
+        eq(verificationTokens.identifier, email),
+        gt(verificationTokens.expires, new Date())
+      )
+    );
+
+  return activeOtp || undefined;
+}
+
+async function deleteActiveOtp(email: string) {
+  const activeOtp = await getActiveOtp(email);
+  if (!activeOtp) return;
+  await db
+    .delete(verificationTokens)
+    .where(
+      and(
+        eq(verificationTokens.identifier, email),
+        eq(verificationTokens.token, activeOtp.token)
+      )
+    );
+}
+
+async function insertOtpToken(email: string) {
+  const token = generateNumericOtp(6);
+
+  await db.insert(verificationTokens).values({
+    expires: new Date(Date.now() + 60 * 5 * 1000),
+    token,
+    identifier: email,
+  });
 }

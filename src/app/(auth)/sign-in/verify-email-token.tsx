@@ -9,9 +9,8 @@ export default async function VerifyEmailToken({
 }) {
   const authSession = await getAuthSession();
 
-  // const cookieStore = await cookies();
-  // const emailToVerify = cookieStore.get("verify-email")?.value;
-
   if (!authSession) return null;
-  return <EmailTokenForm email={authSession} />;
+  return (
+    <EmailTokenForm redirect={searchParams?.redirect} email={authSession} />
+  );
 }

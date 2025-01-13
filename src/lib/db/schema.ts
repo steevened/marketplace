@@ -278,6 +278,8 @@ export type TeamDataWithMembers = Team & {
   })[];
 };
 
+export type VerificationToken = typeof verificationTokens.$inferSelect;
+
 export enum ActivityType {
   SIGN_UP = "SIGN_UP",
   SIGN_IN = "SIGN_IN",
