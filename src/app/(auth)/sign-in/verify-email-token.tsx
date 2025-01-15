@@ -1,6 +1,5 @@
-import { cookies } from "next/headers";
-import EmailTokenForm from "./email-token-form";
 import { getAuthSession } from "@/lib/actions/auth.actions";
+import EmailTokenForm from "./email-token-form";
 
 export default async function VerifyEmailToken({
   searchParams,

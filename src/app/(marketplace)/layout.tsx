@@ -19,10 +19,11 @@ import MarketSidebarFooter from "./components/mk-sidebar-footer";
 import PriceRange from "./components/price-range";
 import { Separator } from "@/components/ui/separator";
 import SellButton from "./components/sell-button";
+import AccountButton from "./components/account-buttom";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <Sidebar variant="floating">
         <SidebarHeader>
           <SidebarMenu>
@@ -58,13 +59,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <main>
+        <main className="border-red-500 mr-2">
           <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="" />
               <Separator orientation="vertical" className="mr-2 h-4" />
             </div>
-            <SellButton />
+            <div className="flex items-center gap-2">
+              <Separator orientation="vertical" className="ml-2 h-4" />
+              <AccountButton />
+            </div>
           </header>
 
           {children}

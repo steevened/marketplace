@@ -1,10 +1,7 @@
-import SignInForm from "@/app/components/sign-in-form";
-import { cookies } from "next/headers";
+import { getAuthSession } from "@/lib/actions/auth.actions";
 import Link from "next/link";
 import SendVerificationEmail from "./send-email-token-form";
 import VerifyEmailToken from "./verify-email-token";
-import EmailTokenForm from "./email-token-form";
-import { getAuthSession } from "@/lib/actions/auth.actions";
 
 type SearchParams = Promise<{
   redirect?: string;

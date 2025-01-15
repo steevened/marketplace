@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcrypt";
-import { and, eq, gt, lt } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
