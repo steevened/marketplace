@@ -7,8 +7,15 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { teams } from "../schema";
-import { users } from "./";
+import { users, teams } from "./";
+
+export const account = pgTable("accounts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+});
+
 export const verificationTokens = pgTable(
   "verificationToken",
   {
