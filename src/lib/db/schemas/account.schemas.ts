@@ -11,6 +11,7 @@ import { users, teams } from "./";
 
 export const account = pgTable("accounts", {
   id: serial("id").primaryKey(),
+  name: varchar("name"),
   userId: integer("user_id")
     .notNull()
     .references(() => users.id),
