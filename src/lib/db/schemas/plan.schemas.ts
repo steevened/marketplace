@@ -34,6 +34,7 @@ export const accountPlans = pgTable("account_plans", {
 
 export const planInterval = pgTable("planInterval", {
   id: serial("id").primaryKey(),
+  label: varchar("label", { length: 20 }).notNull().default("Mensual"), // mensual o anual
   interval: varchar("interval", { length: 20 }).notNull().default("month"), // 'month' or 'year'
 });
 
