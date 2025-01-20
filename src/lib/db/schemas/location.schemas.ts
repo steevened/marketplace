@@ -1,15 +1,4 @@
-import {
-  pgTable,
-  serial,
-  varchar,
-  text,
-  timestamp,
-  integer,
-  boolean,
-  decimal,
-  jsonb,
-  primaryKey,
-} from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
 export const provinces = pgTable("provinces", {
   id: serial("id").primaryKey(),
