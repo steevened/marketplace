@@ -1,16 +1,17 @@
 "use server";
 
 import bcrypt from "bcrypt";
-import { and, eq, gt, lt } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "../db";
-import { users, VerificationToken, verificationTokens } from "../db/schema";
+import { VerificationToken } from "../db/schema";
 import { EmailSchemaField, SignInSchema } from "../schemas/auth.schemas";
 import { createSession, deleteSession } from "../session";
 import { FormState } from "../types";
+import { users, verificationTokens } from "../db/schemas";
 
 export async function signIn(
   state: FormState,

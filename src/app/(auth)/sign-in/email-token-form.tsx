@@ -13,7 +13,6 @@ import {
 } from "@/lib/actions/auth.actions";
 import { FormState } from "@/lib/types";
 import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
 import {
   Dispatch,
   SetStateAction,
@@ -101,7 +100,7 @@ function EmailTokenForm({
 
           <input
             className="hidden"
-            value={redirect}
+            defaultValue={redirect}
             name="redirect"
             id="redirect"
           />

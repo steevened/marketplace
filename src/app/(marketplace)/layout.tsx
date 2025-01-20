@@ -1,3 +1,5 @@
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -13,30 +15,20 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Car } from "lucide-react";
-import Link from "next/link";
+import BrandLink from "../components/brand-link";
+import AccountButton from "./components/account-buttom";
 import MarketSidebarFooter from "./components/mk-sidebar-footer";
 import PriceRange from "./components/price-range";
-import { Separator } from "@/components/ui/separator";
-import SellButton from "./components/sell-button";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <Sidebar variant="floating">
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size={"lg"} asChild>
-                <Link href={"/"}>
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <Car className="size-6" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Autos Usados</span>
-                    <span className="truncate text-xs">Ecuador</span>
-                  </div>
-                </Link>
+                <BrandLink />
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -58,17 +50,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <main>
-          <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
+        <div className="">
+          <header className="h-16 flex items-center  shrink-0 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4">
+            <div className="grid grid-cols-12 gap-2 w-full">
+              <div className="flex items-center test gap-2 col-span-2 ">
+                <SidebarTrigger className="" />
+                <Separator orientation="vertical" className="mr-2 h-4" />
+              </div>
+              <div
+                className="col-span-8 flex justify-center 
+              "
+              >
+                <div className="w-full max-w-xl hidden sm:block">
+                  <Input
+                    type="text"
+                    // value={input}
+                    // onChange={onInputChange}
+                    placeholder="Buscar"
+                    name=""
+                    // ref={inputRef}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2 col-span-2  justify-end">
+                <Separator orientation="vertical" className="ml-2 h-4" />
+                <AccountButton />
+              </div>
             </div>
-            <SellButton />
           </header>
 
-          {children}
-        </main>
+          <main>{children}</main>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
