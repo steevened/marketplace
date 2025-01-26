@@ -42,3 +42,6 @@ export async function getPlanIntervals() {
     );
 }
 // .leftJoin(plans, eq(plans.id, planIntervalRelation.planId));
+
+export type AvailablePlans = Awaited<ReturnType<typeof getAvailablePlans>>;
+export type PlanIntervals = Awaited<ReturnType<typeof getPlanIntervals>>;
