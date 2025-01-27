@@ -8,7 +8,7 @@ export const users = pgTable("users", {
   emailVerified: timestamp("email_verified", { mode: "date" }),
   phone: varchar("phone", { length: 20 }),
   phoneVerified: timestamp("phone_verified", { mode: "date" }),
-  passwordHash: text("password_hash").notNull(),
+  passwordHash: text("password_hash"),
   role: varchar("role", { length: 20 }).notNull().default("user"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

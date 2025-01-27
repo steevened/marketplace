@@ -1,4 +1,4 @@
-import { getAuthSession } from "@/lib/actions/auth.actions";
+import { getAuthSession } from "../data";
 import EmailTokenForm from "./email-token-form";
 
 export default async function VerifyEmailToken({

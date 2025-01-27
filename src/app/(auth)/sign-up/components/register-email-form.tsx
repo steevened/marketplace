@@ -1,22 +1,12 @@
 "use client";
 
-import { sendEmailVerificationToken } from "@/lib/actions/auth.actions";
 import React, { useActionState } from "react";
+import EmailFormContent from "@/app/(auth)/components/email-form-content";
+import { registerEmail } from "@/app/(auth)/actions";
 import { toast } from "sonner";
-import EmailFormContent from "../components/email-form-content";
 
-export default function SendVerificationEmail({
-  searchParams,
-  authSessionEmail,
-}: {
-  searchParams?: Record<string, string>;
-  authSessionEmail?: string;
-}) {
-  const [state, action, pending] = useActionState(
-    sendEmailVerificationToken,
-    undefined
-  );
-
+export default function RegisterEmailForm() {
+  const [state, action, pending] = useActionState(registerEmail, undefined);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -37,8 +27,7 @@ export default function SendVerificationEmail({
       pending={pending}
       state={state}
       inputRef={inputRef}
-      processEmail={authSessionEmail}
-      type="sign-in"
+      type="sign-up"
     />
   );
 }

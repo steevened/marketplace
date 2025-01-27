@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -5,18 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AvailablePlans, getAvailablePlans, getPlanIntervals } from "../data";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   RadioCardGroup,
   RadioCardIndicator,
   RadioCardItem,
 } from "@/components/ui/radio-card-group";
-import { Label } from "@/components/ui/label";
-export default function PlanCard({ plans }: { plans: AvailablePlans }) {
-  // console.log(planIntervals);
+import { AvailablePlans } from "../data";
+export default function PlansCard({ plans }: { plans: AvailablePlans }) {
   return (
-    <Card className="w-[400px] ">
+    <Card className="w-[400px]">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">
           Selecciona tu plan
@@ -24,9 +22,18 @@ export default function PlanCard({ plans }: { plans: AvailablePlans }) {
       </CardHeader>
       <CardContent>
         <RadioCardGroup
+          defaultValue="free"
           // key={plan.id}
-          defaultValue={plans.find((p) => p.type === "free")?.id.toString()}
+          // defaultValue={plans.find((p) => p.type === "free")?.id.toString()}
         >
+          <RadioCardItem value={"free"} id={`free`}>
+            <div className="flex items-start gap-3">
+              <RadioCardIndicator className="mt-1" />
+              <div className="flex justify-between w-full">
+                <span className="sm:text-sm">Free</span>
+              </div>
+            </div>
+          </RadioCardItem>
           {plans.map((plan) => (
             <RadioCardItem
               key={plan.id}
@@ -35,27 +42,13 @@ export default function PlanCard({ plans }: { plans: AvailablePlans }) {
             >
               <div className="flex items-start gap-3">
                 <RadioCardIndicator className="mt-1" />
-                <div>
-                  <span className="sm:text-sm">
-                    {plan.name} - ${Number(plan.price).toFixed(2)}
-                  </span>
-                  <p className="mt-1 text-xs text-gray-500">
-                    {plan.description}
-                  </p>
+                <div className="flex justify-between w-full">
+                  <span className="sm:text-sm">{plan.name}</span>
+
+                  <Badge>${plan.price} / mes</Badge>
                 </div>
               </div>
             </RadioCardItem>
-            // <Label htmlFor={`plan-${plan.id}`}>
-            //   <div className="flex flex-col">
-            //     <span className="font-medium">{plan.name}</span>
-            //     <span className="text-sm text-muted-foreground">
-            //       {plan.description}
-            //     </span>
-            //     <span className="text-sm font-semibold">
-            //       ${Number(plan.price).toFixed(2)}
-            //     </span>
-            //   </div>
-            // </Label>
           ))}
         </RadioCardGroup>
       </CardContent>

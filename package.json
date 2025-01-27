@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "generate:db": "drizzle-kit generate",
+    "migrate:db": "drizzle-kit migrate",
+    "push:db": "drizzle-kit push",
     "start": "next start",
     "lint": "next lint",
     "pages:build": "npx @cloudflare/next-on-pages"

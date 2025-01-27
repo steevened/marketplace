@@ -89,6 +89,7 @@ export async function sendEmailVerificationToken(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
+      formData,
     };
   }
 
