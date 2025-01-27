@@ -2,10 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { sendEmailVerificationToken } from "@/lib/actions/auth.actions";
 import { FormState } from "@/lib/types";
-import React, { useActionState } from "react";
-import { toast } from "sonner";
+import React from "react";
 
 export default function EmailFormContent({
   action,

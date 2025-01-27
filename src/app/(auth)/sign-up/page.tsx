@@ -9,10 +9,6 @@ export default async function Page() {
         {!registerSession ? (
           <RegisterEmailForm />
         ) : (
-          // <SendVerificationEmail
-          //   authSessionEmail={authSession}
-          //   searchParams={await searchParams}
-          // />
           <>verify email</>
           // <VerifyEmailToken searchParams={await searchParams} />
         )}

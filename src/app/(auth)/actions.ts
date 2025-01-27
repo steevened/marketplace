@@ -45,6 +45,13 @@ export async function registerEmail(
     redirect("/sign-in");
   }
 
+  await db.insert(users).values({
+    email: email,
+    createdAt: new Date(),
+  });
+
+  await createRegisterSession(email);
+
   return {
     success: true,
   };
