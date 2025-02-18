@@ -24,10 +24,11 @@ export default function EmailFormContent({
     <form action={action} className="">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col items-center text-center">
-          <h1 className="text-2xl font-bold">Bienvenido</h1>
+          <h1 className="text-2xl font-bold">
+            {type === "sign-in" ? "Iniciar sesión" : "Registrarse"}
+          </h1>
           <p className="text-balance text-muted-foreground">
-            Ingresa tu email para{" "}
-            {type === "sign-in" ? "iniciar sesión" : "registrarte"}
+            Ingresa tu email para continuar
           </p>
         </div>
 

@@ -2,8 +2,8 @@
 
 import React, { useActionState } from "react";
 import EmailFormContent from "@/app/(auth)/components/email-form-content";
-import { registerEmail } from "@/app/(auth)/actions";
 import { toast } from "sonner";
+import { registerEmail } from "@/lib/actions/sign-up.actions";
 
 export default function RegisterEmailForm() {
   const [state, action, pending] = useActionState(registerEmail, undefined);

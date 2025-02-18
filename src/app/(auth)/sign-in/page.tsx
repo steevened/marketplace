@@ -14,7 +14,7 @@ export default async function Page({
   const authSession = await getAuthSession();
 
   return (
-    <div className="flex h-full items-center justify-center">
+    <div className="flex pb-16  h-full items-center justify-center">
       <div className="w-full max-w-[24rem]">
         {!authSession ? (
           <SendVerificationEmail

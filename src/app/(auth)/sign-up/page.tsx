@@ -1,5 +1,6 @@
-import { getRegisterSession } from "../data";
+import { getAuthSession, getRegisterSession } from "../data";
 import RegisterEmailForm from "./components/register-email-form";
+import VerifyEmailRegisteForm from "./components/verify-email-register-form";
 
 export default async function Page() {
   const registerSession = await getRegisterSession();
@@ -9,10 +10,23 @@ export default async function Page() {
         {!registerSession ? (
           <RegisterEmailForm />
         ) : (
-          <>verify email</>
+          //we verify the condition here again cause the registerSession updates without rerendering the page
+          <VerifyEmailRegisteForm email={registerSession} />
           // <VerifyEmailToken searchParams={await searchParams} />
         )}
       </div>
     </div>
+  );
+}
+async function VerifyEmail() {
+  const authSession = await getRegisterSession();
+
+  if (!authSession) return null;
+
+  return (
+    <div>
+      <h1>Verify Email</h1>
+    </div>
+    // <EmailTokenForm redirect={searchParams?.redirect} email={authSession} />
   );
 }
