@@ -1,6 +1,6 @@
 "use client";
 
-import BrandLink from "@/app/components/brand-link";
+import BrandLink from "@/app/components/brand/brand-link";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
