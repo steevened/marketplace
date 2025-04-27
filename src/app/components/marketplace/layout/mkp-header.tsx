@@ -12,7 +12,7 @@ export default function MkpHeader() {
   return (
     <header className="h-16 flex items-center  shrink-0 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4">
       <div className="grid grid-cols-12 gap-2 w-full">
-        <div className="flex items-center test gap-2 col-span-2 ">
+        <div className="flex items-center gap-2 col-span-2 ">
           {/* <SidebarTrigger className="" /> */}
           <Link href={"/"}>
             <BrandText className="hover:text-slate-950" />

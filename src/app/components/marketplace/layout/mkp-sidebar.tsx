@@ -26,6 +26,7 @@ import { ChevronRight, Check } from "lucide-react";
 import MkpHeader from "./mkp-header";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 const data = {
   filters: [
@@ -156,9 +157,11 @@ export default function MktSidebar({
       </Sidebar>
       <SidebarInset>
         <div className="">
-          <MkpHeader />
+          <div className="sticky top-0 z-10 bg-background rounded-t-2xl overflow-hidden">
+            <MkpHeader />
+          </div>
 
-          <main>{children}</main>
+          <main className={cn("flex-1 p-4 pt-0")}>{children}</main>
         </div>
       </SidebarInset>
     </>
