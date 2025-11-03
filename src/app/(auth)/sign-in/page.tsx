@@ -1,5 +1,5 @@
 import { getSignInSession } from "../data";
-import SendVerificationEmail from "./send-email-token-form";
+import SendVerificationEmailForm from "./send-email-token-form";
 import VerifyEmailToken from "./verify-email-token";
 
 type SearchParams = Promise<{
@@ -17,7 +17,7 @@ export default async function Page({
     <div className="flex pb-16  h-full items-center justify-center">
       <div className="w-full max-w-[24rem]">
         {!signInSession?.email ? (
-          <SendVerificationEmail
+          <SendVerificationEmailForm
             searchParams={await searchParams}
           />
         ) : (

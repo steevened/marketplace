@@ -79,6 +79,10 @@ import { serverToast } from "./config.actions";
 //   revalidatePath("/");
 // }
 
+
+
+
+
 export async function sendEmailVerificationToken(
   state: FormState,
   formData: FormData
@@ -330,7 +334,9 @@ export async function insertOtpToken(email: string) {
   });
 }
 async function createAuthSession(email: string) {
-  await serverToast.warning('Not implemented')
-  // throw new Error("Function not implemented.");
+  await serverToast.warning("Not implemented");
 }
 
+export async function createSignInSession(email: string) {
+  return await createAuthSession(email);
+}
