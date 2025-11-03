@@ -1,4 +1,4 @@
-import { getAuthSession } from "../data";
+import { getSignInSession } from "../data";
 import SendVerificationEmail from "./send-email-token-form";
 import VerifyEmailToken from "./verify-email-token";
 
@@ -11,14 +11,13 @@ export default async function Page({
 }: {
   searchParams: SearchParams;
 }) {
-  const authSession = await getAuthSession();
+  const signInSession = await getSignInSession();
 
   return (
     <div className="flex pb-16  h-full items-center justify-center">
       <div className="w-full max-w-[24rem]">
-        {!authSession ? (
+        {!signInSession?.email ? (
           <SendVerificationEmail
-            authSessionEmail={authSession}
             searchParams={await searchParams}
           />
         ) : (

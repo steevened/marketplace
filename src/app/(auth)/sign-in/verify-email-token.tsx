@@ -1,4 +1,4 @@
-import { getAuthSession } from "../data";
+import { getSignInSession } from "../data";
 import EmailTokenForm from "./email-token-form";
 
 export default async function VerifyEmailToken({
@@ -6,10 +6,10 @@ export default async function VerifyEmailToken({
 }: {
   searchParams?: Record<string, string>;
 }) {
-  const authSession = await getAuthSession();
+  const authSession = await getSignInSession();
 
-  if (!authSession) return null;
+  if (!authSession?.email) return null;
   return (
-    <EmailTokenForm redirect={searchParams?.redirect} email={authSession} />
+    <EmailTokenForm redirect={searchParams?.redirect} email={authSession.email} />
   );
 }

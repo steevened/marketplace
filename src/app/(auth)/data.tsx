@@ -9,10 +9,13 @@ export async function getRegisterSession(): Promise<string | undefined> {
   return email;
 }
 
-export async function getAuthSession(): Promise<string | undefined> {
+export async function getSignInSession(): Promise<{email: string} | null> {
   const cookieStore = await cookies();
   const email = cookieStore.get("auth-session")?.value;
-  return email;
+  if(!email) return null
+  return {
+    email
+  }
 }
 
 

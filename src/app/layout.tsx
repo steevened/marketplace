@@ -36,7 +36,6 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-sans)]`}
       >
         <Providers>
-          <Toaster closeButton theme="system" />
           {serverNotification && (
             <ServerNotification {...serverNotification}/>
           )}

@@ -36,7 +36,7 @@ export default function EmailFormContent({
           <div className="grid gap-2">
             <Input
               defaultValue={
-                state?.formData?.get("email")?.toString() || processEmail
+                state?.formData?.get("email")?.toString()
               }
               id="email"
               ref={inputRef}
