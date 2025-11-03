@@ -9,6 +9,8 @@ import { db } from "../db";
 // import { VerificationToken } from "../db/schema";
 import { users, verificationTokens } from "../db/schemas";
 import { getCurrentOtp } from "@/app/(auth)/data";
+import { FormState } from "../types";
+import { EmailSchemaField } from "../schemas/auth.schemas";
 // import { SignInSchema } from "../schemas/auth.schemas";
 // import { createSession, deleteSession } from "../session";
 // import { FormState } from "../types";
@@ -76,64 +78,64 @@ import { getCurrentOtp } from "@/app/(auth)/data";
 //   revalidatePath("/");
 // }
 
-// export async function sendEmailVerificationToken(
-//   state: FormState,
-//   formData: FormData
-// ) {
-//   const EmailSchema = z.object({
-//     email: EmailSchemaField,
-//   });
-//   const validatedFields = EmailSchema.safeParse({
-//     email: formData.get("email"),
-//   });
+export async function sendEmailVerificationToken(
+  state: FormState,
+  formData: FormData
+) {
+  const EmailSchema = z.object({
+    email: EmailSchemaField,
+  });
+  const validatedFields = EmailSchema.safeParse({
+    email: formData.get("email"),
+  });
 
-//   if (!validatedFields.success) {
-//     return {
-//       errors: validatedFields.error.flatten().fieldErrors,
-//       formData,
-//     };
-//   }
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      formData,
+    };
+  }
 
-//   const { email } = validatedFields.data;
+  const { email } = validatedFields.data;
 
-//   const [user] = await db
-//     .select({ userId: users.id, email: users.email })
-//     .from(users)
-//     .where(eq(users.email, email));
+  const [user] = await db
+    .select({ userId: users.id, email: users.email })
+    .from(users)
+    .where(eq(users.email, email));
 
-//   if (!user) {
-//     await createAuthSession(email);
-//     return {
-//       success: true,
-//     };
-//   }
+  if (!user) {
+    await createAuthSession(email);
+    return {
+      success: true,
+    };
+  }
 
-//   const [currentOtp] = await db
-//     .select()
-//     .from(verificationTokens)
-//     .where(
-//       and(
-//         eq(verificationTokens.identifier, email),
-//         gt(verificationTokens.expires, new Date())
-//       )
-//     );
+  const [currentOtp] = await db
+    .select()
+    .from(verificationTokens)
+    .where(
+      and(
+        eq(verificationTokens.identifier, email),
+        gt(verificationTokens.expires, new Date())
+      )
+    );
 
-//   if (currentOtp) {
-//     await createAuthSession(email);
-//     return {
-//       message: "Ya se ha enviado un código OTP a tu email",
-//       success: false,
-//     };
-//   }
+  if (currentOtp) {
+    await createAuthSession(email);
+    return {
+      message: "Ya se ha enviado un código OTP a tu email",
+      success: false,
+    };
+  }
 
-//   await insertOtpToken(email);
+  await insertOtpToken(email);
 
-//   await createAuthSession(email);
+  await createAuthSession(email);
 
-//   return {
-//     success: true,
-//   };
-// }
+  return {
+    success: true,
+  };
+}
 
 // export async function verifyEmailToken(
 //   state: FormState,
@@ -326,3 +328,7 @@ export async function insertOtpToken(email: string) {
     identifier: email,
   });
 }
+function createAuthSession(email: string) {
+  throw new Error("Function not implemented.");
+}
+
