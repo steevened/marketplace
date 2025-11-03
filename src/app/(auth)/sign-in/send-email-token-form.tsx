@@ -25,11 +25,11 @@ export default function SendVerificationEmail({
     }
   }, [inputRef]);
 
-  React.useEffect(() => {
-    if (state?.message) {
-      toast(state.message);
-    }
-  }, [state]);
+  // React.useEffect(() => {
+  //   if (state?.message) {
+  //     toast(state.message);
+  //   }
+  // }, [state]);
 
   return (
     <EmailFormContent

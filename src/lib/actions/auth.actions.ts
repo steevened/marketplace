@@ -11,6 +11,7 @@ import { users, verificationTokens } from "../db/schemas";
 import { getCurrentOtp } from "@/app/(auth)/data";
 import { FormState } from "../types";
 import { EmailSchemaField } from "../schemas/auth.schemas";
+import { serverToast } from "./config.actions";
 // import { SignInSchema } from "../schemas/auth.schemas";
 // import { createSession, deleteSession } from "../session";
 // import { FormState } from "../types";
@@ -328,7 +329,8 @@ export async function insertOtpToken(email: string) {
     identifier: email,
   });
 }
-function createAuthSession(email: string) {
-  throw new Error("Function not implemented.");
+async function createAuthSession(email: string) {
+  await serverToast.warning('Not implemented')
+  // throw new Error("Function not implemented.");
 }
 

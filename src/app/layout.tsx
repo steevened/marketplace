@@ -1,8 +1,11 @@
+import "./globals.css";
+
 import Providers from "@/components/core/providers";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import { getToastNotification } from "@/lib/actions/config.actions";
+import ServerNotification from "./components/config/server-notification";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,11 +23,13 @@ export const metadata: Metadata = {
   description: "Compra y vende autos usados en Ecuador",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const serverNotification = await getToastNotification();
+  console.log(serverNotification)
   return (
     <html lang="en">
       <body
@@ -32,6 +37,9 @@ export default function RootLayout({
       >
         <Providers>
           <Toaster closeButton theme="system" />
+          {serverNotification && (
+            <ServerNotification {...serverNotification}/>
+          )}
 
           <main className="min-h-[calc(100svh-120px)]">{children}</main>
         </Providers>

@@ -15,6 +15,7 @@ export async function getAuthSession(): Promise<string | undefined> {
   return email;
 }
 
+
 export async function getCurrentOtp(identifier: string) {
   const [currentOtp] = await db
     .select()
