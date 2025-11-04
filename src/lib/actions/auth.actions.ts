@@ -1,17 +1,17 @@
 "use server";
 
 import { and, eq, gt } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { cookies, headers } from "next/headers";
 import { z } from "zod";
 import { db } from "../db";
 // import { VerificationToken } from "../db/schema";
-import { users, verificationTokens } from "../db/schemas";
 import { getCurrentOtp } from "@/app/(auth)/data";
-import { FormState } from "../types";
+import { getVisitorSession } from "../data/auth.data";
+import { users, verificationTokens, visitors } from "../db/schemas";
 import { EmailSchemaField } from "../schemas/auth.schemas";
+import { FormState } from "../types";
 import { serverToast } from "./config.actions";
+import { revalidatePath } from "next/cache";
 // import { SignInSchema } from "../schemas/auth.schemas";
 // import { createSession, deleteSession } from "../session";
 // import { FormState } from "../types";
@@ -79,9 +79,42 @@ import { serverToast } from "./config.actions";
 //   revalidatePath("/");
 // }
 
+export async function SignInVerificationEmail(
+  state: FormState,
+  formData: FormData
+) {
+  const EmailSchema = z.object({
+    email: EmailSchemaField,
+  });
+  const validatedFields = EmailSchema.safeParse({
+    email: formData.get("email"),
+  });
 
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      formData,
+    };
+  }
 
+  const { email } = validatedFields.data;
 
+  const [user] = await db
+    .select({ userId: users.id, email: users.email })
+    .from(users)
+    .where(eq(users.email, email));
+
+  if (!user) {
+    revalidatePath("/sign-in");
+    await insertOtpToken(email);
+    // createNonAuthSignInProcess(email);
+    // return {
+    //   success: true,
+    // };
+  }
+}
+
+async function createNonAuthSignInProcess(email: string) {}
 
 export async function sendEmailVerificationToken(
   state: FormState,
@@ -136,6 +169,61 @@ export async function sendEmailVerificationToken(
   await insertOtpToken(email);
 
   await createAuthSession(email);
+
+  return {
+    success: true,
+  };
+}
+
+export async function verifySignInOTP(state: FormState, formData: FormData) {
+  const visitorSession = await getVisitorSession();
+
+  if (!visitorSession || !visitorSession.visitorId) {
+    serverToast.error(
+      "El código OTP ha sido usado o expirado, por favor vuelva a intentarlo nuevamente."
+    );
+    revalidatePath("/sign-in");
+    return {
+      success: false,
+    };
+  }
+
+  const validatedFields = z
+    .object({
+      email: EmailSchemaField,
+      otp: z.coerce.string().length(6, {
+        message: "El código OTP debe tener 6 dígitos",
+      }),
+    })
+    .safeParse({
+      email: visitorSession.identifier,
+      otp: formData.get("otp"),
+    });
+
+  if (!validatedFields.success) {
+    for (const error in validatedFields.error.errors) {
+      serverToast.error(validatedFields.error.errors[error].message);
+    }
+    return {
+      success: false,
+    };
+  }
+
+  const { email, otp } = validatedFields.data;
+
+  const [user] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, email));
+
+  if (!user) {
+    serverToast.error(
+      "El código OTP ha sido usado o expirado, por favor vuelva a intentarlo nuevamente."
+    );
+    return {
+      suceess: false,
+    };
+  }
 
   return {
     success: true,
@@ -238,10 +326,15 @@ export async function sendEmailVerificationToken(
 //   redirect(redirectParam || "/");
 // }
 
-// export async function resetAuthProcess() {
-//   const cookieStore = await cookies();
-//   cookieStore.delete("auth-session");
-// }
+export async function resetSignInProcess() {
+  const visitorSession = await getVisitorSession();
+  if (!visitorSession) revalidatePath("/sign-in");
+  const cookieStore = await cookies();
+  cookieStore.delete("visitor-id");
+  await createOrUpdateVisitor();
+  revalidatePath("/sign-in");
+  // await db.delete(verificationTokens).where(eq())
+}
 
 // export async function resendEmailToken(state: FormState) {
 //   const authSession = await getAuthSession();
@@ -326,11 +419,14 @@ export async function deleteActiveOtp(email: string) {
 
 export async function insertOtpToken(email: string) {
   const token = generateNumericOtp(6);
+  const cookieStore = await cookies();
+  const visitorId = cookieStore.get("visitor-id")?.value;
 
   await db.insert(verificationTokens).values({
     expires: new Date(Date.now() + 60 * 5 * 1000),
     token,
     identifier: email,
+    visitorId: Number(visitorId),
   });
 }
 async function createAuthSession(email: string) {
@@ -339,4 +435,34 @@ async function createAuthSession(email: string) {
 
 export async function createSignInSession(email: string) {
   return await createAuthSession(email);
+}
+
+export async function createOrUpdateVisitor() {
+  const cookieStore = await cookies();
+  const visitorId = cookieStore.get("visitor-id")?.value;
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent");
+
+  let visitor: { id: number } | null;
+
+  if (!visitorId) {
+    const [visitorCreated] = await db
+      .insert(visitors)
+      .values({
+        userAgent,
+      })
+      .returning({ id: visitors.id });
+    visitor = visitorCreated;
+    cookieStore.set("visitor-id", visitorCreated.id.toString());
+  } else {
+    const [visitorUpdated] = await db
+      .update(visitors)
+      .set({ userAgent, joinedAt: new Date() })
+      .where(eq(visitors.id, Number(visitorId)))
+      .returning({ id: visitors.id });
+
+    visitor = visitorUpdated;
+  }
+
+  return visitor;
 }

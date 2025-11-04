@@ -7,7 +7,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { users, teams } from "./";
+import { users, teams, visitors } from "./";
 
 export const account = pgTable("accounts", {
   id: serial("id").primaryKey(),
@@ -23,6 +23,9 @@ export const verificationTokens = pgTable(
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
+    visitorId: integer("visitor_id")
+      .notNull()
+      .references(() => visitors.id),
   },
   (verificationTokens) => {
     return [

@@ -1,4 +1,4 @@
-import { getSignInSession } from "../data";
+import { getVisitorSession } from "@/lib/data/auth.data";
 import EmailTokenForm from "./email-token-form";
 
 export default async function VerifyEmailToken({
@@ -6,10 +6,13 @@ export default async function VerifyEmailToken({
 }: {
   searchParams?: Record<string, string>;
 }) {
-  const authSession = await getSignInSession();
+  const visitorSession = await getVisitorSession();
 
-  if (!authSession?.email) return null;
+  if (!visitorSession?.visitorId) return null;
   return (
-    <EmailTokenForm redirect={searchParams?.redirect} email={authSession.email} />
+    <EmailTokenForm
+      redirect={searchParams?.redirect}
+      email={visitorSession.identifier}
+    />
   );
 }

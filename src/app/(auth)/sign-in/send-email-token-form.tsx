@@ -1,11 +1,9 @@
 "use client";
 
-import { sendEmailVerificationToken } from "@/lib/actions/auth.actions";
-import React, { useActionState } from "react";
-import { toast } from "sonner";
-import EmailFormContent from "../components/email-form-content";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { sendEmailVerificationToken, SignInVerificationEmail } from "@/lib/actions/auth.actions";
+import React, { useActionState } from "react";
 
 export default function SendVerificationEmail({
   searchParams,
@@ -13,7 +11,7 @@ export default function SendVerificationEmail({
   searchParams?: Record<string, string>;
 }) {
   const [state, action, pending] = useActionState(
-    sendEmailVerificationToken,
+    SignInVerificationEmail,
     undefined
   );
 

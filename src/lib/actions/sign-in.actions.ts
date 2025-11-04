@@ -48,8 +48,14 @@ import { cookies } from "next/headers";
 //   }
 // }
 
-export async function createLoginSession(email: string) {
-  const cookieStore = await cookies();
 
-  cookieStore.set("login-session", email, {});
+
+export async function createLoginSession(email: string) {
+
+
+  const [user] = await db
+    .select({ userId: users.id, email: users.email })
+    .from(users)
+    .where(eq(users.email, email));
+
 }

@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { getToastNotification } from "@/lib/actions/config.actions";
 import ServerNotification from "./components/config/server-notification";
+import { createOrUpdateVisitor } from "@/lib/data/auth.data";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,16 +30,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const serverNotification = await getToastNotification();
-  console.log(serverNotification)
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-[family-name:var(--font-geist-sans)]`}
       >
         <Providers>
-          {serverNotification && (
-            <ServerNotification {...serverNotification}/>
-          )}
+          {serverNotification && <ServerNotification {...serverNotification} />}
 
           <main className="min-h-[calc(100svh-120px)]">{children}</main>
         </Providers>
