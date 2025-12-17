@@ -1,16 +1,18 @@
-import { cookies } from "next/headers";
+import { getVisitorSession } from "@/lib/data/auth.data";
 import EmailTokenForm from "./email-token-form";
-import { getAuthSession } from "@/lib/actions/auth.actions";
 
 export default async function VerifyEmailToken({
   searchParams,
 }: {
   searchParams?: Record<string, string>;
 }) {
-  const authSession = await getAuthSession();
+  const visitorSession = await getVisitorSession();
 
-  if (!authSession) return null;
+  if (!visitorSession?.visitorId) return null;
   return (
-    <EmailTokenForm redirect={searchParams?.redirect} email={authSession} />
+    <EmailTokenForm
+      redirect={searchParams?.redirect}
+      email={visitorSession.identifier}
+    />
   );
 }

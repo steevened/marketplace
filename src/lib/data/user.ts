@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db";
-import { users } from "../db/schema";
 import { verifySession } from "../session";
 // import { unstable_cacheTag as cacheTag } from "next/cache";
 import { cache } from "react";
+import { users } from "../db/schemas";
 
 export const getUser = cache(async () => {
   // "use cache";

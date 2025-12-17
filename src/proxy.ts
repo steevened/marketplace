@@ -3,7 +3,7 @@ import { verifySession } from "./lib/session";
 
 const protectedRoutes = ["/dashboard", "/sell"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const params = new URLSearchParams(request.nextUrl.searchParams.toString());
