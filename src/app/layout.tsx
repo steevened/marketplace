@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { getToastNotification } from "@/lib/actions/config.actions";
 import ServerNotification from "./components/config/server-notification";
-import { createOrUpdateVisitor } from "@/lib/data/auth.data";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

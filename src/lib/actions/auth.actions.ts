@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, desc } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { z } from "zod";
 import { db } from "../db";
@@ -12,6 +12,8 @@ import { EmailSchemaField } from "../schemas/auth.schemas";
 import { FormState } from "../types";
 import { serverToast } from "./config.actions";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createSession } from "../session";
 // import { SignInSchema } from "../schemas/auth.schemas";
 // import { createSession, deleteSession } from "../session";
 // import { FormState } from "../types";
@@ -105,16 +107,18 @@ export async function SignInVerificationEmail(
     .where(eq(users.email, email));
 
   if (!user) {
-    revalidatePath("/sign-in");
-    await insertOtpToken(email);
-    // createNonAuthSignInProcess(email);
-    // return {
-    //   success: true,
-    // };
+    // TODO: SEND EMAIL
   }
+
+  await insertOtpToken(email);
+
+  revalidatePath("/sign-in");
+
+  return {
+    success: true,
+  };
 }
 
-async function createNonAuthSignInProcess(email: string) {}
 
 export async function sendEmailVerificationToken(
   state: FormState,
@@ -190,7 +194,6 @@ export async function verifySignInOTP(state: FormState, formData: FormData) {
 
   const validatedFields = z
     .object({
-      email: EmailSchemaField,
       otp: z.coerce.string().length(6, {
         message: "El código OTP debe tener 6 dígitos",
       }),
@@ -209,12 +212,10 @@ export async function verifySignInOTP(state: FormState, formData: FormData) {
     };
   }
 
-  const { email, otp } = validatedFields.data;
-
   const [user] = await db
-    .select({ id: users.id })
+    .select({ id: users.id, email: users.email })
     .from(users)
-    .where(eq(users.email, email));
+    .where(eq(users.email, visitorSession.identifier));
 
   if (!user) {
     serverToast.error(
@@ -224,6 +225,46 @@ export async function verifySignInOTP(state: FormState, formData: FormData) {
       suceess: false,
     };
   }
+
+  const { otp } = validatedFields.data;
+
+  const [existingToken] = await db
+    .select()
+    .from(verificationTokens)
+    .where(
+      and(
+        eq(verificationTokens.identifier, user.email),
+        eq(verificationTokens.token, otp)
+      )
+    )
+    .orderBy(desc(verificationTokens.expires));
+
+  if (!existingToken) {
+    serverToast.error("Código OTP inválido");
+    return {
+      success: false,
+    };
+  }
+
+  const activeToken = await getCurrentOtp(user.email);
+
+  if (!activeToken) {
+    serverToast.error(
+      "El código OTP ha expirado, por favor solicita uno nuevo"
+    );
+    return {
+      success: false,
+    };
+  }
+
+  await deleteActiveOtp(user.email);
+
+  await createSession(user.id);
+
+  const redirectParam = formData.get("redirect") as string;
+
+  redirect(redirectParam || "/");
+
 
   return {
     success: true,

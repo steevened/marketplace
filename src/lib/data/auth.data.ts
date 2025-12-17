@@ -3,10 +3,10 @@ import { cookies } from "next/headers";
 import { db } from "../db";
 import { verificationTokens } from "../db/schemas";
 
-export const  getVisitorSession = async () => {
+export const getVisitorSession = async () => {
   const cookieStore = await cookies();
-  const visitorId = cookieStore.get("visitor-id");
-  if(!visitorId)return null
+  const visitorId =  cookieStore.get("visitor-id");
+  if (!visitorId) return null;
   const [tokenProcess] = await db
     .select()
     .from(verificationTokens)

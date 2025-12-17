@@ -58,6 +58,7 @@ export async function verifySession(): Promise<{ userId: number } | null> {
   const cookieStore = await cookies();
   const cookieFound = cookieStore.get(cookie?.name)?.value;
   const session = await decrypt(cookieFound);
+  console.log(session)
   if (!session) return null;
   return {
     userId: session.userId as number,

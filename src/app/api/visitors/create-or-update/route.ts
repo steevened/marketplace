@@ -13,10 +13,6 @@ export async function GET() {
   }
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function createOrUpdateVisitor() {
   const cookieStore = await cookies();
   const visitorId = cookieStore.get("visitor-id")?.value;

@@ -1,3 +1,4 @@
+import LoaderComponent from "@/app/components/config/loader-component";
 import { createOrUpdateVisitor } from "@/lib/actions/auth.actions";
 import { useEffect, useTransition } from "react";
 
@@ -16,9 +17,7 @@ export default function VisitorProvider({
 
   if (isPending)
     return (
-      <div className="flex items-center justify-center text-2xl h-screen text-muted-foregroundÍ">
-        Loading from visitor provider...
-      </div>
+      <LoaderComponent />
     );
 
   return children;
